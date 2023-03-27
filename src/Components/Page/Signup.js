@@ -36,8 +36,8 @@ function SignUp() {
       .then((res) => {
         if (res.ok) {
           console.log(res);
-          alert("New user Created");
-          res.json();
+          console.log("New user Created");
+          return res.json();
         } else {
           let errorMessgae = " Authentication faild";
           throw new Error(errorMessgae);

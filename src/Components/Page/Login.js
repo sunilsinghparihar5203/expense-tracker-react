@@ -1,11 +1,15 @@
-import React, { useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useRef, useState,useContext } from "react";
+import { Link, useHistory } from "react-router-dom";
+import { AuthContext } from '../../Store/Context'
 
 function Login() {
   const emailRef = useRef();
   const passRef = useRef();
   const [isLoading, setIsLoading] = useState(false);
+  const history = useHistory();
 
+  const authCtx = useContext(AuthContext)
+  console.log({authCtx:authCtx})
   const login = (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -13,7 +17,7 @@ function Login() {
     const password = passRef.current.value;
 
     fetch(
-      `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=key=AIzaSyDcB1qwRdzv9rw43GzoG2AG1VVhKtmf-I0`,
+      `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDcB1qwRdzv9rw43GzoG2AG1VVhKtmf-I0`,
       {
         method: "POST",
         body: JSON.stringify({
@@ -27,19 +31,22 @@ function Login() {
       }
     )
       .then((res) => {
-        console.log({ res: res });
-        res.json();
         if (res.ok) {
-          console.log(res);
-          alert("user Logged in");
-          res.json();
+          console.log({res:res});
+          console.log("user Logged in");
+          return res.json();
         } else {
           let errorMessgae = "Authentication faild";
           throw new Error(errorMessgae);
         }
-      }).then((data)=>{
-        console.log({data:data})
-      }).catch((err) => {
+      })
+      .then((data) => {
+        authCtx.logIn(data.idToken)
+        console.log({ data: data });
+        console.log({authCtx:authCtx})
+        history.push("/");
+      })
+      .catch((err) => {
         alert(err);
         console.log({ err: err });
       })
