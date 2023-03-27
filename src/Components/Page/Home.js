@@ -8,7 +8,7 @@ function Home() {
 
  if(!authCtx.isLoggedIn){
   history.push('/login')
- }
+ } 
  console.log({authCtx:authCtx})
 
   return (
