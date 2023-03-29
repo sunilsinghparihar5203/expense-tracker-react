@@ -41,10 +41,11 @@ function Login() {
         }
       })
       .then((data) => {
-        authCtx.logIn(data.idToken,data.displayName,data.profilePicture)
+        authCtx.logIn(data.idToken,data.displayName,data.profilePicture,data.email)
         localStorage.setItem('token',data.idToken)
         localStorage.setItem('displayName',data.displayName)
         localStorage.setItem('profilePicture',data.profilePicture)
+        localStorage.setItem('email',data.email)
         console.log({ data: data });
         console.log({authCtx:authCtx})
         history.push("/");
