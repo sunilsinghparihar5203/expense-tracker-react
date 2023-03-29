@@ -1,5 +1,6 @@
 import React, { useRef, useContext, useState } from "react";
 import { AuthContext } from "../../Store/Context";
+import { Link } from "react-router-dom";
 
 function UpdateProfile() {
   const nameRef = useRef();
@@ -31,7 +32,7 @@ function UpdateProfile() {
       }
     )
       .then((res) => {
-        console.log({res:res})
+        console.log({ res: res });
         if (res.ok) {
           console.log({ res: res });
           return res.json();
@@ -41,7 +42,7 @@ function UpdateProfile() {
         }
       })
       .then((data) => {
-        alert("Updated!")
+        alert("Updated!");
         console.log({ data: data });
       })
       .catch((err) => {
@@ -65,6 +66,7 @@ function UpdateProfile() {
               className="form-control"
               ref={nameRef}
               id="name"
+              value={authCtx.displayName || ""}
               required
             />
           </div>
@@ -74,6 +76,7 @@ function UpdateProfile() {
               type="text"
               className="form-control"
               ref={profilePhotoRef}
+              value={authCtx.profilePicture || ""}
               id="profilePhoto"
               required
             />
@@ -83,9 +86,12 @@ function UpdateProfile() {
             <button type="submit" className="btn btn-info">
               {isLoading ? "Updating..." : "Submit"}
             </button>
-            <button type="button" className="btn btn-danger mx-4">
-              Cancle
-            </button>
+
+            <Link to={"/"} >
+              <button type="button" className="btn btn-danger mx-4">
+                Cancle
+              </button>
+            </Link>
           </div>
         </div>
       </form>

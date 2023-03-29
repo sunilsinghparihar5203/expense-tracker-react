@@ -41,7 +41,10 @@ function Login() {
         }
       })
       .then((data) => {
-        authCtx.logIn(data.idToken)
+        authCtx.logIn(data.idToken,data.displayName,data.profilePicture)
+        localStorage.setItem('token',data.idToken)
+        localStorage.setItem('displayName',data.displayName)
+        localStorage.setItem('profilePicture',data.profilePicture)
         console.log({ data: data });
         console.log({authCtx:authCtx})
         history.push("/");
