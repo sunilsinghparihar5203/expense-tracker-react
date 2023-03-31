@@ -15,7 +15,7 @@ function Header() {
           <Link to={"/update-profile"}>
             {!isComplete ? <>Complete now.</> : <>Update</>}
           </Link>{" "}
-        </div>
+        </div> 
 
         <div className="px-4 bg-warning rounded-pill">
           <Link to={"/login"} onClick={authCtx.logOut}>
