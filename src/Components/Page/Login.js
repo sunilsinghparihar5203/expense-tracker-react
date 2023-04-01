@@ -1,6 +1,6 @@
-import React, { useRef, useState,useContext } from "react";
+import React, { useRef, useState, useContext } from "react";
 import { Link, useHistory } from "react-router-dom";
-import { AuthContext } from '../../Store/Context'
+import { AuthContext } from "../../Store/Context";
 
 function Login() {
   const emailRef = useRef();
@@ -8,8 +8,8 @@ function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const history = useHistory();
 
-  const authCtx = useContext(AuthContext)
-  console.log({authCtx:authCtx})
+  const authCtx = useContext(AuthContext);
+  console.log({ authCtx: authCtx });
   const login = (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -32,7 +32,7 @@ function Login() {
     )
       .then((res) => {
         if (res.ok) {
-          console.log({res:res});
+          console.log({ res: res });
           console.log("user Logged in");
           return res.json();
         } else {
@@ -41,13 +41,18 @@ function Login() {
         }
       })
       .then((data) => {
-        authCtx.logIn(data.idToken,data.displayName,data.profilePicture,data.email)
-        localStorage.setItem('token',data.idToken)
-        localStorage.setItem('displayName',data.displayName)
-        localStorage.setItem('profilePicture',data.profilePicture)
-        localStorage.setItem('email',data.email)
+        authCtx.logIn(
+          data.idToken,
+          data.displayName,
+          data.profilePicture,
+          data.email
+        );
+        localStorage.setItem("token", data.idToken);
+        localStorage.setItem("displayName", data.displayName);
+        localStorage.setItem("profilePicture", data.profilePicture);
+        localStorage.setItem("email", data.email);
         console.log({ data: data });
-        console.log({authCtx:authCtx})
+        console.log({ authCtx: authCtx });
         history.push("/");
       })
       .catch((err) => {
@@ -80,13 +85,16 @@ function Login() {
             required
             placeholder="Password"
           />
+
+          <div>
+            <Link to={"/forget-password"}>Forget Password? </Link>
+          </div>
           {!isLoading && (
             <button type="submit" className="btn btn-info my-2">
               login
             </button>
           )}
           {isLoading && <p>Loging...</p>}
-
           <div className={`alert alert-dark`} role="alert">
             <Link to={"/signup"}>Want to create new account? signup</Link>
           </div>

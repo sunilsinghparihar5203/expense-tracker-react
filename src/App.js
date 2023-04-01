@@ -3,6 +3,7 @@ import Signup from "./Components/Page/Signup";
 import Login from "./Components/Page/Login";
 import { Route, Switch } from "react-router-dom";
 import Home from "./Components/Page/Home";
+import ForgetPassword from "./Components/Page/ForgetPassword";
 
 function App() {
   return (
@@ -12,6 +13,9 @@ function App() {
       </Route>
       <Route path="/login">
         <Login />
+      </Route>
+      <Route path="/forget-password">
+        <ForgetPassword />
       </Route>
       <Route path="/">
         <Home />
