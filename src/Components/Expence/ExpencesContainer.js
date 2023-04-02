@@ -1,18 +1,29 @@
-import React from "react";
-import AddExpence from "./AddExpence";
+import React, { useState, useEffect } from "react";
 import ExpenceItem from "./ExpenceItem";
-import ListGroup from 'react-bootstrap/ListGroup';
+import ListGroup from "react-bootstrap/ListGroup";
 import { Container } from "react-bootstrap";
 
-
-
 function ExpencesContainer(props) {
+  useEffect(() => {
+    props.fetchExpences()
+  }, [])
+  
   return (
-    <Container>
+    <Container className="my-4">
       <ListGroup>
-        {props.items.map(element => {
-          return <ExpenceItem key={element.id} id={element.id} price={element.money} desc={element.desc} category={element.category}/>
-        })}
+        {props.isLoading && <>Fetching data......</>}
+        {!props.isLoading &&
+          Object.keys(props.Items).map((element) => {
+            return (
+              <ExpenceItem
+                key={element}
+                id={element}
+                price={props.Items[element].Price}
+                desc={props.Items[element].category}
+                category={props.Items[element].desc}
+              />
+            );
+          })}
       </ListGroup>
     </Container>
   );

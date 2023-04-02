@@ -2,31 +2,54 @@ import React, { useRef, useState } from "react";
 import { Container, Row, Form, Button, Col, Spinner } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
-
-
 function AddExpence(props) {
   const moneyRef = useRef();
   const descRef = useRef();
   const categoryRef = useRef();
   const [isLoading, setIsLoading] = useState(false);
 
-  const addExpenceFormHandler = (e) => {
+  const addExpenceFormHandler = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    const money = moneyRef.current.value;
+    const Price = moneyRef.current.value;
     const desc = descRef.current.value;
     const category = categoryRef.current.value;
     const id = Date.now();
     console.log({
-      id:id,
-      money: money,
+      id: id,
+      Price: Price,
       desc: desc,
       category: category,
     });
-    
-    props.onaddItem({id:id,money: money,desc: desc,category: category,})
+
+    const expence = { Price: Price, desc: desc, category: category };
+    const data = await addExpence(expence);
+    if (!data) {
+      alert("There might be some error");
+    } else {
+      props.onaddItem({ id: id, Price: Price, desc: desc, category: category });
+    }
     setIsLoading(false);
   };
+
+  async function addExpence(expence) {
+    const response = await fetch(
+      "https://expense-tracker-e9e2b-default-rtdb.asia-southeast1.firebasedatabase.app/expences.json",
+      {
+        method: "POST",
+        body: JSON.stringify(expence),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.ok) {
+      const data = await response.json();
+      return data;
+    } else {
+      return response.ok;
+    }
+  }
 
   return (
     <Container>
