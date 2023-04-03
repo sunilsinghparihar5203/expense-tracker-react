@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Container, Row, Form, Button, Col, Spinner } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
@@ -6,7 +6,16 @@ function AddExpence(props) {
   const moneyRef = useRef();
   const descRef = useRef();
   const categoryRef = useRef();
+  const formRef = useRef();
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (props.isUpdate) {
+      moneyRef.current.value = props.UpdateValues.price;
+      descRef.current.value = props.UpdateValues.desc;
+      categoryRef.current.value = props.UpdateValues.category;
+    }
+  }, [props]);
 
   const addExpenceFormHandler = async (e) => {
     e.preventDefault();
@@ -23,11 +32,22 @@ function AddExpence(props) {
     });
 
     const expence = { Price: Price, desc: desc, category: category };
-    const data = await addExpence(expence);
+    let data;
+    if (props.isUpdate) {
+      alert(props.UpdateValues.id);
+      data = await props.UpdateExpence({
+        id: props.UpdateValues.id,
+        ...expence,
+      });
+    } else {
+      data = await addExpence(expence);
+    }
+
     if (!data) {
       alert("There might be some error");
     } else {
-      props.onaddItem({ id: id, Price: Price, desc: desc, category: category });
+      props.fetchExpences();
+      console.log("Successfully added!");
     }
     setIsLoading(false);
   };
@@ -45,16 +65,27 @@ function AddExpence(props) {
     );
     if (response.ok) {
       const data = await response.json();
+      props.fetchExpences();
       return data;
     } else {
       return response.ok;
     }
   }
 
+  const UpdateCancleHandler = () => {
+    props.setIsUpdate(false);
+    moneyRef.current.value = "";
+    descRef.current.value = "";
+    categoryRef.current.value = "";
+  };
   return (
     <Container>
       <Row className="justify-content-md-center my-4">
-        <Col sm={8} className="shadow-sm p-3 mb-5 bg-body rounded py-4">
+        <Col
+          sm={8}
+          className="shadow-sm p-3 mb-5 bg-body rounded py-4"
+          ref={formRef}
+        >
           <Form onSubmit={addExpenceFormHandler}>
             <Form.Group className="mb-3" controlId="formBasicEmail">
               <Form.Label>Money spent</Form.Label>
@@ -63,6 +94,7 @@ function AddExpence(props) {
                 placeholder="Money spent"
                 min="0"
                 ref={moneyRef}
+                required
               />
             </Form.Group>
 
@@ -72,6 +104,7 @@ function AddExpence(props) {
                 type="text"
                 placeholder="Description"
                 ref={descRef}
+                required
               />
             </Form.Group>
 
@@ -80,8 +113,10 @@ function AddExpence(props) {
               <Form.Select
                 aria-label="Default select example"
                 ref={categoryRef}
+                required
+                id="categorySelect"
               >
-                <option> Select category</option>
+                <option value=""> Select category</option>
                 <option value="Food">Food</option>
                 <option value="Petrol">Petrol</option>
                 <option value="Salary">Salary</option>
@@ -92,7 +127,7 @@ function AddExpence(props) {
               </Form.Select>
             </Form.Group>
 
-            <Button variant="primary" type="submit">
+            <Button variant={props.isUpdate ? "info" : "primary"} type="submit">
               {isLoading && (
                 <>
                   <Spinner
@@ -102,16 +137,28 @@ function AddExpence(props) {
                     role="status"
                     aria-hidden="true"
                   />
-                  Saving...
+                  {props.isUpdate ? "Saving..." : "Updating.."}
                 </>
               )}
-              {!isLoading && "Save"}
+              {!isLoading && !props.isUpdate && "Save"}
+              {!isLoading && props.isUpdate && "Update"}
             </Button>
-            <Link to={"/"}>
-              <button type="button" className="btn btn-danger mx-4">
+            {!props.isUpdate && (
+              <Link to={"/"}>
+                <button type="button" className="btn btn-danger mx-4">
+                  Cancle
+                </button>
+              </Link>
+            )}
+            {props.isUpdate && (
+              <button
+                type="button"
+                className="btn btn-warning mx-4"
+                onClick={UpdateCancleHandler}
+              >
                 Cancle
               </button>
-            </Link>
+            )}
           </Form>
         </Col>
       </Row>
