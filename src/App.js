@@ -14,7 +14,7 @@ function App() {
       <Route path="/login">
         <Login />
       </Route>
-      
+
       <Route path="/forget-password">
         <ForgetPassword />
       </Route>

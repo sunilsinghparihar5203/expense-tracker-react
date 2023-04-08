@@ -3,7 +3,7 @@ import ExpenceItem from "./ExpenceItem";
 import ListGroup from "react-bootstrap/ListGroup";
 import { Container } from "react-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
-import { expenseAction } from "../../Store/Expenses";
+import { authAction } from "../../Store/Auth";
 
 function ExpencesContainer(props) {
   const Items = useSelector((state) => state.expense.expences);
@@ -12,8 +12,24 @@ function ExpencesContainer(props) {
     props.fetchExpences();
   }, []);
 
+  function downloadCSVFile(Items, filename) {
+    var val = `ID,Price,Desc,category \n`;
+    let csv = val + Object.entries(Items).map(([key, item]) => {
+       let cal =`${key},${item.Price},${item.desc},${item.category}\n`;
+      return cal;
+    });
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    link.click();
+    URL.revokeObjectURL(url);
+    link.remove();
+  }
+
   return (
-    <Container className="my-4">
+    <Container className="py-4 vh-75">
       <ListGroup>
         {props.isLoading && <>Fetching data......</>}
         {!props.isLoading &&
@@ -31,7 +47,12 @@ function ExpencesContainer(props) {
               />
             );
           })}
-          {Object.values(Items).length == 0 && <>No expense available</>}
+
+        {!props.isLoading && Object.values(Items).length == 0 && (
+          <>No expense available</>
+        )}
+
+        <button onClick={() => downloadCSVFile(Items,"cvsfile")} className="btn btn-sm btn-secondary">download</button>
       </ListGroup>
     </Container>
   );

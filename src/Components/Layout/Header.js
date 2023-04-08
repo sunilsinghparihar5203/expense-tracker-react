@@ -3,6 +3,7 @@ import { Link, NavLink } from "react-router-dom";
 
 import { useSelector, useDispatch } from "react-redux";
 import { authAction } from "../../Store/Auth";
+import { themeAction } from "../../Store/Theme";
 
 import classes from "./Header.module.css";
 function Header() {
@@ -10,18 +11,43 @@ function Header() {
   const isComplete = useSelector((state) => !!state.auth.displayName);
   const isActivePremium = useSelector((state) => state.expense.isActivePremium);
 
+  const showTheme = useSelector((state) => state.theme.showTheme);
+  const theme = useSelector((state) => state.theme.theme);
+
   const logOutHandler = () => {
     dispatch(authAction.logOut());
   };
 
+  const activePremiumHandler = () => {
+    dispatch(themeAction.showTheme());
+  };
+
+  const themeHandler = () => {
+    dispatch(themeAction.changeTheme(theme));
+  };
   return (
-    <div className={classes.Header}>
-      <div>Welcome to expence tracker</div>
+    <div className={`${classes.Header} navbar-${theme}  bg-${theme} `} >
+      <Link className="navbar-brand" to="/">Welcome to expence tracker</Link>
       <div className="d-flex">
         {isActivePremium && (
-          <div className="px-4 mx-2 bg-warning text-white rounded-pill btn btn-sm">
-            Active Premium
-          </div>
+          <>
+            <button
+              className="px-4 mx-2 bg-warning text-white rounded-pill btn btn-sm"
+              onClick={activePremiumHandler}
+            >
+              {!showTheme && "Active Premium"}
+              {showTheme && "Activated"}
+            </button>
+
+            {showTheme && (
+              <button
+                className="px-4 mx-2 bg-warning text-white rounded-pill btn btn-sm"
+                onClick={themeHandler}
+              >
+                {theme}
+              </button>
+            )}
+          </>
         )}
 
         <div className="px-4 mx-2 bg-info rounded-pill btn btn-sm text-light">

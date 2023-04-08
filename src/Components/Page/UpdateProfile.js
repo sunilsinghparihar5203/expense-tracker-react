@@ -10,9 +10,13 @@ function UpdateProfile() {
   const [profilePhoto, setProfilePhoto] = useState(authStore.profilePicture);
   const [name, setName] = useState(authStore.displayName);
 
-  const [isVarified, setisVarified] = useState(false);
+  const theme = useSelector((state) => state.theme.theme);
+  const [isVarified, setisVarified] = useState(true);
 
   const [isLoading, setIsLoading] = useState(false);
+  useEffect(() => {
+    fethData();
+  }, [isVarified,authStore]);
 
   const fethData = () => {
     fetch(
@@ -38,10 +42,6 @@ function UpdateProfile() {
         console.log(err);
       });
   };
-
-  useEffect(() => {
-    fethData();
-  }, [isVarified,authStore]);
 
   const profileSubmitHandler = (e) => {
     e.preventDefault();
@@ -124,8 +124,8 @@ function UpdateProfile() {
   };
 
   return (
-    <div className="container my-4">
-      <h1>User Details: </h1>
+    <div className={`container py-4 py-4 bg-${theme}`} >
+      <h1 className={`font-${theme}`}>User Details: </h1>
       <form onSubmit={profileSubmitHandler}>
         <div className="row">
           <div className="col-md-6">

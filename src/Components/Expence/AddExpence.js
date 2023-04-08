@@ -81,8 +81,8 @@ function AddExpence(props) {
     categoryRef.current.value = "";
   };
   return (
-    <Container>
-      <Row className="justify-content-md-center my-4">
+    <Container className="form-container">
+      <Row className="justify-content-md-center py-4">
         <Col
           sm={8}
           className="shadow-sm p-3 mb-5 bg-body rounded py-4"
