@@ -23,6 +23,10 @@ function AuthContextProvider(props) {
     SetDisplayName(name ? name : "");
     SetProfilePicture(profile ? profile : "");
     SetEmail(email ? email : "");
+        localStorage.setItem("token", token);
+        localStorage.setItem("displayName", name);
+        localStorage.setItem("profilePicture", profile);
+        localStorage.setItem("email", email);
   };
 
   const logoutHandler = () => {

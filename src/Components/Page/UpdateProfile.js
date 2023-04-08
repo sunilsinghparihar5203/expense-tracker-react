@@ -1,12 +1,14 @@
-import React, { useRef, useContext, useState, useEffect } from "react";
-import { AuthContext } from "../../Store/Context";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-function UpdateProfile() {
-  const authCtx = useContext(AuthContext);
+import { useSelector, useDispatch } from "react-redux";
+import { authAction } from "../../Store/Auth";
 
-  const [profilePhoto, setProfilePhoto] = useState(authCtx.profilePhoto);
-  const [name, setName] = useState(authCtx.displayName);
+function UpdateProfile() {
+  const authStore = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const [profilePhoto, setProfilePhoto] = useState(authStore.profilePicture);
+  const [name, setName] = useState(authStore.displayName);
 
   const [isVarified, setisVarified] = useState(false);
 
@@ -18,7 +20,7 @@ function UpdateProfile() {
       {
         method: "POST",
         body: JSON.stringify({
-          idToken: authCtx.tokenId,
+          idToken: authStore.tokenId,
         }),
         headers: {
           "Content-Type": "application/json",
@@ -29,8 +31,8 @@ function UpdateProfile() {
         return res.json();
       })
       .then((data) => {
-        setisVarified(data.emailVerified);
-        console.log({ getDAta: data });
+        setisVarified(data.users[0].emailVerified );
+        console.log({ getDAta: data});
       })
       .catch((err) => {
         console.log(err);
@@ -39,7 +41,7 @@ function UpdateProfile() {
 
   useEffect(() => {
     fethData();
-  }, [isVarified]);
+  }, [isVarified,authStore]);
 
   const profileSubmitHandler = (e) => {
     e.preventDefault();
@@ -50,7 +52,7 @@ function UpdateProfile() {
       {
         method: "POST",
         body: JSON.stringify({
-          idToken: authCtx.tokenId,
+          idToken: authStore.tokenId,
           displayName: name,
           photoUrl: profilePhoto,
           returnSecureToken: true,
@@ -72,8 +74,8 @@ function UpdateProfile() {
       })
       .then((data) => {
         alert("Updated!");
-        authCtx.setName(name);
-        authCtx.setProfile(profilePhoto);
+        dispatch(authAction.setDisplayName(name));
+        dispatch(authAction.setProfilePicture(profilePhoto));
         console.log({ data: data });
       })
       .catch((err) => {
@@ -91,7 +93,7 @@ function UpdateProfile() {
       {
         method: "POST",
         body: JSON.stringify({
-          idToken: authCtx.tokenId,
+          idToken: authStore.tokenId,
           requestType: "VERIFY_EMAIL",
         }),
         headers: {
@@ -104,7 +106,7 @@ function UpdateProfile() {
         return res.json();
       })
       .then((data) => {
-        alert("Verification mail sent.")
+        alert("Verification mail sent.");
         console.log(data);
       })
       .catch((err) => {
@@ -141,14 +143,14 @@ function UpdateProfile() {
             <input
               type="text"
               className="form-control"
-              value={authCtx.profilePicture}
+              value={profilePhoto}
               onChange={photoUrlHandler}
               required
             />
           </div>
 
           <div className="col-md-6 my-4">
-            <button type="submit" className="btn btn-info">
+            <button type="submit" className="btn btn-info " disabled={isLoading}>
               {isLoading ? "Updating..." : "Submit"}
             </button>
 
@@ -166,7 +168,7 @@ function UpdateProfile() {
         <input
           type="text"
           className="form-control"
-          value={authCtx.email}
+          value={authStore.email}
           id="email"
           readOnly
           required

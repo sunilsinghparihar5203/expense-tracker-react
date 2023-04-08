@@ -1,15 +1,16 @@
 import React, { useRef, useState, useContext } from "react";
 import { Link, useHistory } from "react-router-dom";
-import { AuthContext } from "../../Store/Context";
+
+import { useDispatch } from "react-redux";
+import { authAction } from "../../Store/Auth";
 
 function Login() {
+  const dispatch = useDispatch();
   const emailRef = useRef();
   const passRef = useRef();
   const [isLoading, setIsLoading] = useState(false);
   const history = useHistory();
 
-  const authCtx = useContext(AuthContext);
-  console.log({ authCtx: authCtx });
   const login = (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -41,18 +42,14 @@ function Login() {
         }
       })
       .then((data) => {
-        authCtx.logIn(
-          data.idToken,
-          data.displayName,
-          data.profilePicture,
-          data.email
+        dispatch(
+          authAction.logIn({
+            tokenId: data.idToken,
+            displayName: data.displayName,
+            profilePicture: data.profilePicture,
+            email: data.email,
+          })
         );
-        localStorage.setItem("token", data.idToken);
-        localStorage.setItem("displayName", data.displayName);
-        localStorage.setItem("profilePicture", data.profilePicture);
-        localStorage.setItem("email", data.email);
-        console.log({ data: data });
-        console.log({ authCtx: authCtx });
         history.push("/");
       })
       .catch((err) => {

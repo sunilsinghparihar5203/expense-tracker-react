@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Container, Row, Form, Button, Col, Spinner } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 function AddExpence(props) {
   const moneyRef = useRef();
@@ -8,6 +9,7 @@ function AddExpence(props) {
   const categoryRef = useRef();
   const formRef = useRef();
   const [isLoading, setIsLoading] = useState(false);
+  const username = useSelector((state) => state.auth.email).split("@")[0];
 
   useEffect(() => {
     if (props.isUpdate) {
@@ -54,7 +56,7 @@ function AddExpence(props) {
 
   async function addExpence(expence) {
     const response = await fetch(
-      "https://expense-tracker-e9e2b-default-rtdb.asia-southeast1.firebasedatabase.app/expences.json",
+      `https://expense-tracker-e9e2b-default-rtdb.asia-southeast1.firebasedatabase.app/expences/${username}.json`,
       {
         method: "POST",
         body: JSON.stringify(expence),

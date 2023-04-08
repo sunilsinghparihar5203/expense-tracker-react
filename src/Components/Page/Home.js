@@ -1,37 +1,37 @@
 import React, { useContext, useState, useCallback } from "react";
-import { useHistory } from "react-router-dom";
+import { Switch, Route, useRouteMatch,useHistory } from "react-router-dom";
 import { AuthContext } from "../../Store/Context";
-import { Switch, Route, useRouteMatch } from "react-router-dom";
 import Header from "../Layout/Header";
 import UpdateProfile from "./UpdateProfile";
 import AddExpence from "../Expence/AddExpence";
 import ExpencesContainer from "../Expence/ExpencesContainer";
-
+import { useSelector,useDispatch } from "react-redux";
+import { expenseAction } from "../../Store/Expenses";
 function Home() {
-  const authCtx = useContext(AuthContext);
+  const dispatch = useDispatch()
+  const isLoggedIn = useSelector((state) => !!state.auth.tokenId)
+  const username = useSelector((state) => state.auth.email).split('@')[0]
+
   const history = useHistory();
   const match = useRouteMatch();
-
-  const [Items, setItems] = useState({});
   const [isLoading, setisLoading] = useState(true);
   const [isUpdate, setIsUpdate] = useState(false);
-
+  
   const [UpdateValues, setUpdateValues] = useState(null);
-
-  console.log({ match: match });
-  if (!authCtx.isLoggedIn) {
+  if (!isLoggedIn) {
     history.push("/login");
   }
-  console.log({ authCtx: authCtx });
 
   const fetchExpences = async () => {
     const response = await fetch(
-      "https://expense-tracker-e9e2b-default-rtdb.asia-southeast1.firebasedatabase.app/expences.json"
+      `https://expense-tracker-e9e2b-default-rtdb.asia-southeast1.firebasedatabase.app/expences/${username}.json`
     );
     setisLoading(false);
     if (response.ok) {
       const data = await response.json();
-      setItems(data);
+      dispatch(expenseAction.addExpense(data))
+      dispatch(expenseAction.totalExpense(data))
+      dispatch(expenseAction.activePremium(data))
       console.log({ datafetch: data });
       return data;
     } else {
@@ -41,7 +41,7 @@ function Home() {
 
   const DeleteExpence = async (id) => {
     const response = await fetch(
-      `https://expense-tracker-e9e2b-default-rtdb.asia-southeast1.firebasedatabase.app/expences/${id}.json`,
+      `https://expense-tracker-e9e2b-default-rtdb.asia-southeast1.firebasedatabase.app/expences/expences/${username}/${id}.json`,
       {
         method: "DELETE",
       }
@@ -56,7 +56,7 @@ function Home() {
 
   const UpdateExpence = async (item) => {
     const response = await fetch(
-      `https://expense-tracker-e9e2b-default-rtdb.asia-southeast1.firebasedatabase.app/expences/${item.id}.json`,
+      `https://expense-tracker-e9e2b-default-rtdb.asia-southeast1.firebasedatabase.app/expences/${username}/${item.id}.json`,
       {
         method: "PUT",
         body: JSON.stringify({
@@ -100,7 +100,6 @@ function Home() {
           <ExpencesContainer
             fetchExpences={fetchExpences}
             isLoading={isLoading}
-            Items={Items}
             deleteExpence={DeleteExpence}
             invokeEditModal={invokeEditModal}
           />

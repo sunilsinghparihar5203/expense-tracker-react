@@ -1,28 +1,43 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Link, NavLink } from "react-router-dom";
-import { AuthContext } from "../../Store/Context";
+
+import { useSelector, useDispatch } from "react-redux";
+import { authAction } from "../../Store/Auth";
 
 import classes from "./Header.module.css";
 function Header() {
-  const authCtx = useContext(AuthContext);
-  const isComplete = authCtx.displayName.length > 0 ? true : false;
+  const dispatch = useDispatch();
+  const isComplete = useSelector((state) => !!state.auth.displayName);
+  const isActivePremium = useSelector((state) => state.expense.isActivePremium);
+
+  const logOutHandler = () => {
+    dispatch(authAction.logOut());
+  };
+
   return (
     <div className={classes.Header}>
       <div>Welcome to expence tracker</div>
       <div className="d-flex">
-       <div className="px-4 mx-2 rounded-pill "  >
-          <NavLink to={"/add-expence"} className={({ isActive }) => (isActive ? 'active' : 'inactive')}>Add Expence</NavLink>
-        </div> 
+        {isActivePremium && (
+          <div className="px-4 mx-2 bg-warning text-white rounded-pill btn btn-sm">
+            Active Premium
+          </div>
+        )}
 
-        <div className="px-4 mx-2 bg-info rounded-pill">
-          {!isComplete && <>Your profile is incomplete.</>}{" "}
-          <Link to={"/update-profile"}>
-            {!isComplete ? <>Complete now.</> : <>Update</>}
+        <div className="px-4 mx-2 bg-info rounded-pill btn btn-sm text-light">
+          <NavLink to={"/add-expence"} className="nav-link">
+            Add Expence
+          </NavLink>
+        </div>
+
+        <div className="px-4 mx-2 bg-info rounded-pill  btn btn-sm text-light">
+          <Link to={"/update-profile"} className="nav-link">
+            {!isComplete ? <>Incomplete Profile</> : <>Update</>}
           </Link>{" "}
-        </div> 
+        </div>
 
-        <div className="px-4 bg-warning rounded-pill">
-          <Link to={"/login"} onClick={authCtx.logOut}>
+        <div className="px-4 bg-danger rounded-pill btn btn-sm">
+          <Link to={"/login"} onClick={logOutHandler} className="nav-link">
             Logout
           </Link>
         </div>
